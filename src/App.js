@@ -6,33 +6,55 @@ import './App.css';
 function App() {
   const [items, setItems] = useState([])
   const [search, setSearch] = useState('')
-
+  const [filtered, setFiltered] = useState([])
+  const [isSubmit, setIsSubmit] = useState(false)
+  
   useEffect(()=>{
     const fetchData = async ()=>{
-      const response = await fetch('http://37.228.116.165/api/advantages/?format=json')
+      const response = await fetch('http://37.228.116.165/api/advantages/')
       const data = await response.json()
       setItems(data)
     }
     fetchData()
   }, [])
+
+  const handleSearch = ()=>{
+    const filteredItems = items.filter(item => {
+      return item.first_raw.toLowerCase().includes(search.toLowerCase())
+   })
+
+   setFiltered(filteredItems)
+   setIsSubmit(true)
+  }
+
+  const handleSubmit =(e)=>{
+    e.preventDefault()
+    handleSearch()
+  }
   return (
     <div className="App">
       <div className='container'>
-        <input className='form-control' type='text' placeholder='search'
-        onChange={(e)=> setSearch(e.target.value)}></input>
+        <form className='input-group mb-3' onSubmit={handleSubmit}>
+           <input className='form-control' type='text' placeholder='search'
+           onChange={(e)=> setSearch(e.target.value)} value={search}></input>
+            <button className='btn btn-secondary' type='submit'>search</button>
+        </form>
         
-        <div className='raw d-flex'>
-        {items.filter((item => {
-          return search.toLowerCase() === '' ? item : item.first_raw.toLowerCase().includes(search)
-        })).map((item, index) => {
+        
+        <div className='raw d-flex justify-content-between'>
+        {isSubmit ? filtered.map((item, index) => {
           return <div className='col-md-2' key={index}>
-                  <p className='card-title'>{item.first_raw}</p>
-                  <a href='#' className='btn primary'>{item.bold}</a>
-                  <p className='card-text'>{item.second_raw}</p>
+                  <h3 className='card-title'>{item.first_raw}</h3>
+                  <p className='card-text'>{item.bold}</p>
                 </div>
+        }): items.map((item)=>{
+          return <div className='col-mg-2' key={item.first_raw}>
+            <h3 className='card-title'>{item.first_raw}</h3>
+            <p className='card-text'>{item.bold}</p>
+          </div>
         })}
         
-      </div>
+        </div>
       </div>
      
     </div>
