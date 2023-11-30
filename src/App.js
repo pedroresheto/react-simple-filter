@@ -56,7 +56,10 @@ function App() {
         
         </div>
       </div>
-     
+     {isSubmit ? <h3 onClick={()=> {
+      setIsSubmit(false)
+      setSearch('')
+      }}>show all</h3>: ""}
     </div>
   );
 }
